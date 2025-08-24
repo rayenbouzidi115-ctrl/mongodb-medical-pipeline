@@ -1,0 +1,46 @@
+version: "3.9"
+
+services:
+  mongo:
+    image: mongo:7
+    container_name: medical_mongo
+    restart: unless-stopped
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+    ports:
+      - "27017:27017"
+    volumes:
+      - mongo_data:/data/db
+
+  mongo-express:
+    image: mongo-express:1.0.2-20
+    container_name: medical_mongo_express
+    restart: unless-stopped
+    depends_on:
+      - mongo
+    environment:
+      ME_CONFIG_MONGODB_ENABLE_ADMIN: "true"
+      ME_CONFIG_MONGODB_ADMINUSERNAME: root
+      ME_CONFIG_MONGODB_ADMINPASSWORD: example
+      ME_CONFIG_MONGODB_URL: mongodb://root:example@mongo:27017/
+      # Basic Auth pour l'UI mongo-express :
+      ME_CONFIG_BASICAUTH_USERNAME: rayen
+      ME_CONFIG_BASICAUTH_PASSWORD: rayenbz
+    ports:
+      - "8081:8081"
+
+  app:
+    build:
+      context: ./app
+    container_name: medical_etl_app
+    depends_on:
+      - mongo
+    env_file: .env
+    volumes:
+      - ./data:/data
+      - ./app:/app
+    command: ["python", "-u", "etl.py"]
+
+volumes:
+  mongo_data:

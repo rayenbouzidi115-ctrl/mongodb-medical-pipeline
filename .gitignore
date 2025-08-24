@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+*.env
+.env
+.venv/
+venv/
+# Data / reports
+data/*.csv
+!data/healthcare_dataset-20250506.csv
+reports/*
+# Docker
+*.log
+# OS
+.DS_Store
+Thumbs.db
